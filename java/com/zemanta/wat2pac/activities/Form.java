@@ -89,6 +89,8 @@ public class Form extends Activity
 			@Override
 			public void onClick(View view)
 			{
+				// TODO save
+				
 				startActivity(new Intent(Form.this, Suitcase.class));
 			}
 		});
