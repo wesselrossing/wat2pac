@@ -13,10 +13,22 @@ import org.json.JSONObject;
 
 public class Airtable
 {
+	private static Airtable singleton;
 	private static final String API_KEY = AirtableApiKey.API_KEY;
+	
+	public static synchronized Airtable getInstance()
+	{
+		if(singleton == null)
+		{
+			singleton = new Airtable();
+		}
+		
+		return singleton;
+	}
+	
 	private List<Communication> pending = new ArrayList<Airtable.Communication>(); // TODO replace with a more appropriate collection
 	
-	public Airtable()
+	private Airtable()
 	{
 		new Communicator().start();
 	}

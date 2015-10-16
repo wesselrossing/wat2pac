@@ -9,14 +9,12 @@ import android.widget.TextView;
 
 public class Form extends Activity
 {
-	private Airtable airtable = new Airtable();
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		
-		airtable.get(new OnAirtableResponseListener()
+		Airtable.getInstance().get(new OnAirtableResponseListener()
 		{
 			@Override
 			public void onAirtableResponse(final String response)
