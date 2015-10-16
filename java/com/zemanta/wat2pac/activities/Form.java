@@ -12,6 +12,8 @@ import com.zemanta.wat2pac.airtable.OnAirtableResponseListener;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -89,8 +91,6 @@ public class Form extends Activity
 			@Override
 			public void onClick(View view)
 			{
-				go.setEnabled(false);
-				
 				JSONObject fields = new JSONObject();
 				
 				try
@@ -108,7 +108,21 @@ public class Form extends Activity
 					@Override
 					public void onAirtableResponse(String response)
 					{
-						Toast.makeText(Form.this, response, Toast.LENGTH_LONG).show();
+						try
+						{
+							String id = new JSONObject(response).getString("id");
+							
+							SharedPreferences sharedPreferences = getSharedPreferences("wat2pac", 0);
+							Editor editor = sharedPreferences.edit();
+							editor.putString("packListId", id);
+							editor.apply();
+							
+							startActivity(new Intent(Form.this, Suitcase.class));
+						}
+						catch(JSONException e)
+						{
+							onError(e.getClass().getSimpleName() + ", " + e.getMessage());
+						}
 					}
 					
 					@Override
@@ -117,9 +131,6 @@ public class Form extends Activity
 						Toast.makeText(Form.this, error, Toast.LENGTH_LONG).show();
 					}
 				});
-				// TODO save
-				
-//				startActivity(new Intent(Form.this, Suitcase.class));
 			}
 		});
 	}
