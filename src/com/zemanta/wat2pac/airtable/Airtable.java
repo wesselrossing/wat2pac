@@ -9,12 +9,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONObject;
+import android.os.Handler;
+import android.os.Looper;
 
 public class Airtable
 {
 	private static Airtable singleton;
 	private static final String API_KEY = AirtableApiKey.API_KEY;
+	private static final String API = "https://api.airtable.com/v0/appS5yu0UXCu8A0o6/";
 	
 	public static synchronized Airtable getInstance()
 	{
@@ -26,6 +28,7 @@ public class Airtable
 		return singleton;
 	}
 	
+	private Handler mainThreadHandler = new Handler(Looper.getMainLooper());
 	private List<Communication> pending = new ArrayList<Airtable.Communication>(); // TODO replace with a more appropriate collection
 	
 	private Airtable()
@@ -33,15 +36,17 @@ public class Airtable
 		new Communicator().start();
 	}
 	
-	public JSONObject get(OnAirtableResponseListener listener)
+	public void get(String target, OnAirtableResponseListener listener)
 	{
 		synchronized(pending)
 		{
-			pending.add(new Communication("https://api.airtable.com/v0/appS5yu0UXCu8A0o6/Items?limit=3&view=Main%20View", listener));
-			pending.notify();
+			pending.add(
+				new Communication(
+					API + target,
+					listener
+				)
+			);
 		}
-		
-		return null;
 	}
 	
 	private class Communicator extends Thread
@@ -51,7 +56,7 @@ public class Airtable
 		{
 			while(true)
 			{
-				Communication communication;
+				Communication poll;
 				
 				synchronized(pending)
 				{
@@ -67,28 +72,37 @@ public class Airtable
 						}
 					}
 					
-					communication = pending.remove(0);
+					poll = pending.remove(0);
+				}
+				
+				final Communication communication = poll;
+				
+				try
+				{
+					URL url = new URL(communication.url + "&api_key=" + API_KEY);
+					HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+					InputStream inputStream = new BufferedInputStream(connection.getInputStream());
 					
-					try
+					BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+					final StringBuilder response = new StringBuilder();
+					String line;
+					while ((line = reader.readLine()) != null)
 					{
-						URL url = new URL(communication.url + "&api_key=" + API_KEY);
-						HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-						InputStream inputStream = new BufferedInputStream(connection.getInputStream());
-						
-						BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-						StringBuilder response = new StringBuilder();
-						String line;
-						while ((line = reader.readLine()) != null)
+						response.append(line);
+					}
+					
+					mainThreadHandler.post(new Runnable()
+					{
+						@Override
+						public void run()
 						{
-							response.append(line);
+							communication.listener.onAirtableResponse(response.toString());
 						}
-						
-						communication.listener.onAirtableResponse(response.toString());
-					}
-					catch(Exception e) // TODO improve exception handling
-					{
-						throw new RuntimeException(e);
-					}
+					});
+				}
+				catch(Exception e) // TODO improve exception handling
+				{
+					throw new RuntimeException(e);
 				}
 			}
 		}

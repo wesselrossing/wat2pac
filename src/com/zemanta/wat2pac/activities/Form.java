@@ -14,21 +14,14 @@ public class Form extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		
-		Airtable.getInstance().get(new OnAirtableResponseListener()
+		Airtable.getInstance().get("Items?limit=3&view=Main%20View", new OnAirtableResponseListener()
 		{
 			@Override
 			public void onAirtableResponse(final String response)
 			{
-				Form.this.runOnUiThread(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						TextView textView = new TextView(Form.this);
-						textView.setText(response);
-						setContentView(textView);
-					}
-				});
+				TextView textView = new TextView(Form.this);
+				textView.setText(response);
+				setContentView(textView);
 			}
 		});
 	}
