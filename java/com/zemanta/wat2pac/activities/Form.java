@@ -1,6 +1,10 @@
 package com.zemanta.wat2pac.activities;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.zemanta.wat2pac.R;
+import com.zemanta.wat2pac.adapter.LocationsAdapter;
 import com.zemanta.wat2pac.airtable.Airtable;
 import com.zemanta.wat2pac.airtable.OnAirtableResponseListener;
 
@@ -27,7 +31,14 @@ public class Form extends Activity
 			@Override
 			public void onAirtableResponse(String response)
 			{
-				
+				try
+				{
+					where.setAdapter(new LocationsAdapter(new JSONObject(response).getJSONArray("records")));
+				}
+				catch(JSONException e)
+				{
+					// TODO
+				}
 			}
 			
 			@Override
