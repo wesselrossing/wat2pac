@@ -1,5 +1,6 @@
 package com.zemanta.wat2pac.activities;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -88,9 +89,37 @@ public class Form extends Activity
 			@Override
 			public void onClick(View view)
 			{
+				go.setEnabled(false);
+				
+				JSONObject fields = new JSONObject();
+				
+				try
+				{
+					fields.put("Where?", new JSONArray(new String[] { ((JSONObject) where.getSelectedView().getTag()).getString("id") }));
+					fields.put("When?", new JSONArray(new String[] { ((JSONObject) when.getSelectedView().getTag()).getString("id") }));
+				}
+				catch(JSONException e)
+				{
+					
+				}
+				
+				Airtable.getInstance().create("Pack%20list", fields, new OnAirtableResponseListener()
+				{
+					@Override
+					public void onAirtableResponse(String response)
+					{
+						Toast.makeText(Form.this, response, Toast.LENGTH_LONG).show();
+					}
+					
+					@Override
+					public void onError(String error)
+					{
+						Toast.makeText(Form.this, error, Toast.LENGTH_LONG).show();
+					}
+				});
 				// TODO save
 				
-				startActivity(new Intent(Form.this, Suitcase.class));
+//				startActivity(new Intent(Form.this, Suitcase.class));
 			}
 		});
 	}

@@ -9,7 +9,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -44,16 +45,46 @@ public class Airtable
 		{
 			pending.add(
 				new Communication(
+					"GET",
 					API + target,
 					listener
 				)
 			);
+			
+			pending.notify();
 		}
 	}
 	
-	public void create(String target, JSONArray fields, OnAirtableResponseListener listener)
+	public void create(String target, JSONObject fields, OnAirtableResponseListener listener)
 	{
+		String body = null;
 		
+		try
+		{
+			JSONObject root = new JSONObject();
+			root.put("fields", fields);
+			body = root.toString();
+		}
+		catch(JSONException e)
+		{
+			listener.onError("Could not create JSON body");
+			
+			return;
+		}
+		
+		synchronized(pending)
+		{
+			pending.add(
+				new Communication(
+					"POST",
+					API + target,
+					body,
+					listener
+				)
+			);
+			
+			pending.notify();
+		}
 	}
 	
 	private class Communicator extends Thread
@@ -88,8 +119,15 @@ public class Airtable
 				{
 					URL url = new URL(communication.url);
 					HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+					connection.setRequestMethod(communication.method);
 					connection.addRequestProperty("Authorization", "Bearer " + API_KEY);
 					connection.addRequestProperty("Content-Type", "application/json");
+					
+					if(communication.body != null)
+					{
+						connection.getOutputStream().write(communication.body.getBytes());
+					}
+					
 					InputStream inputStream = new BufferedInputStream(connection.getInputStream());
 					
 					BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -116,7 +154,7 @@ public class Airtable
 						@Override
 						public void run()
 						{
-							communication.listener.onError("Exception while communication with Airtable, " + e.getClass().getSimpleName());
+							communication.listener.onError(e.getClass().getSimpleName() + ", " + e.getMessage());
 						}
 					});
 				}
@@ -126,11 +164,20 @@ public class Airtable
 	
 	private class Communication
 	{
+		private String method;
 		private String url;
+		private String body;
 		private OnAirtableResponseListener listener;
 		
-		public Communication(String url, OnAirtableResponseListener listener)
+		public Communication(String method, String url, String body, OnAirtableResponseListener listener)
 		{
+			this(method, url, listener);
+			this.body = body;
+		}
+		
+		public Communication(String method, String url, OnAirtableResponseListener listener)
+		{
+			this.method = method;
 			this.url = url;
 			this.listener = listener;
 		}
