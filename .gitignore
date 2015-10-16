@@ -1,3 +1,4 @@
+.DS_Store
 bin
 gen
-src/com/zemanta/wat2pac/airtable/AirtableApiKey.java
+java/com/zemanta/wat2pac/airtable/AirtableApiKey.java
