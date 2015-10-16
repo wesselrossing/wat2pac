@@ -48,11 +48,10 @@ public class ImageAdapter extends BaseAdapter {
             imageView.setLayoutParams(new GridView.LayoutParams(250, 250));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(8, 8, 8, 8);
+            new DownloadImageTask(imageView).execute(items.get(position).getImageURL());
         } else {
             imageView = (ImageView) convertView;
         }
-
-        new DownloadImageTask(imageView).execute(items.get(position).getImageURL());
 
         return imageView;
     }
