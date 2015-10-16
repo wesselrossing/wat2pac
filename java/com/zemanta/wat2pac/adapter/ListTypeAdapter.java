@@ -13,15 +13,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-public class LocationsAdapter extends BaseAdapter
+public class ListTypeAdapter extends BaseAdapter
 {
-	private JSONArray locations;
+	private String[] listTypes = new String[] { "Suggested pack list", "My pack list" };
 	private LayoutInflater inflater;
-	
-	public LocationsAdapter(JSONArray locations)
-	{
-		this.locations = locations;
-	}
 	
 	@Override
 	public long getItemId(int position)
@@ -32,20 +27,13 @@ public class LocationsAdapter extends BaseAdapter
 	@Override
 	public int getCount()
 	{
-		return locations.length();
+		return listTypes.length;
 	}
 	
 	@Override
-	public JSONObject getItem(int position)
+	public String getItem(int position)
 	{
-		try
-		{
-			return locations.getJSONObject(position);
-		}
-		catch(JSONException e)
-		{
-			throw new RuntimeException(e);
-		}
+		return listTypes[position];
 	}
 	
 	@Override
@@ -67,17 +55,7 @@ public class LocationsAdapter extends BaseAdapter
 			textView = (TextView) inflater.inflate(R.layout.spinner_item, null);
 		}
 		
-		JSONObject location = getItem(position);
-		textView.setTag(location);
-		
-		try
-		{
-			textView.setText(location.getJSONObject("fields").getString("Name"));
-		}
-		catch(JSONException e)
-		{
-			// TODO
-		}
+		textView.setText(getItem(position));
 		
 		return textView;
 	}
