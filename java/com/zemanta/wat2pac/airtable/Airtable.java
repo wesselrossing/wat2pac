@@ -100,9 +100,16 @@ public class Airtable
 						}
 					});
 				}
-				catch(Exception e) // TODO improve exception handling
+				catch(final Exception e) // TODO improve exception handling
 				{
-					throw new RuntimeException(e);
+					mainThreadHandler.post(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							communication.listener.onError("Exception while communication with Airtable, " + e.getClass().getSimpleName());
+						}
+					});
 				}
 			}
 		}

@@ -6,6 +6,7 @@ import com.zemanta.wat2pac.airtable.OnAirtableResponseListener;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Form extends Activity
 {
@@ -22,6 +23,12 @@ public class Form extends Activity
 				TextView textView = new TextView(Form.this);
 				textView.setText(response);
 				setContentView(textView);
+			}
+			
+			@Override
+			public void onError(String error)
+			{
+				Toast.makeText(Form.this, error, Toast.LENGTH_LONG).show();
 			}
 		});
 	}
