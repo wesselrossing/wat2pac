@@ -9,6 +9,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+
 import android.os.Handler;
 import android.os.Looper;
 
@@ -49,6 +51,11 @@ public class Airtable
 		}
 	}
 	
+	public void create(String target, JSONArray fields, OnAirtableResponseListener listener)
+	{
+		
+	}
+	
 	private class Communicator extends Thread
 	{
 		@Override
@@ -79,8 +86,10 @@ public class Airtable
 				
 				try
 				{
-					URL url = new URL(communication.url + "&api_key=" + API_KEY);
+					URL url = new URL(communication.url);
 					HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+					connection.addRequestProperty("Authorization", "Bearer " + API_KEY);
+					connection.addRequestProperty("Content-Type", "application/json");
 					InputStream inputStream = new BufferedInputStream(connection.getInputStream());
 					
 					BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
