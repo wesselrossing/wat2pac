@@ -1,0 +1,6 @@
+package com.zemanta.wat2pac.airtable;
+
+public class AirtableApiKey
+{
+	static final String API_KEY = "YOUR_KEY_GOES_HERE";
+}
