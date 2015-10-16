@@ -16,6 +16,7 @@ import android.widget.Toast;
 public class Form extends Activity
 {
 	private Spinner where;
+	private Spinner when;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -34,6 +35,30 @@ public class Form extends Activity
 				try
 				{
 					where.setAdapter(new LocationsAdapter(new JSONObject(response).getJSONArray("records")));
+				}
+				catch(JSONException e)
+				{
+					// TODO
+				}
+			}
+			
+			@Override
+			public void onError(String error)
+			{
+				Toast.makeText(Form.this, error, Toast.LENGTH_LONG).show();
+			}
+		});
+		
+		when = (Spinner) findViewById(R.id.when);
+		
+		Airtable.getInstance().get("Seasons?view=Main%20View", new OnAirtableResponseListener()
+		{
+			@Override
+			public void onAirtableResponse(String response)
+			{
+				try
+				{
+					when.setAdapter(new LocationsAdapter(new JSONObject(response).getJSONArray("records")));
 				}
 				catch(JSONException e)
 				{

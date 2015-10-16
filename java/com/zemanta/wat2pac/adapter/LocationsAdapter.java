@@ -4,6 +4,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.zemanta.wat2pac.R;
+
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -12,6 +16,7 @@ import android.widget.TextView;
 public class LocationsAdapter extends BaseAdapter
 {
 	private JSONArray locations;
+	private LayoutInflater inflater;
 	
 	public LocationsAdapter(JSONArray locations)
 	{
@@ -46,7 +51,22 @@ public class LocationsAdapter extends BaseAdapter
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
-		TextView textView = new TextView(parent.getContext());
+		TextView textView;
+		
+		if(convertView != null)
+		{
+			textView = (TextView) convertView;
+		}
+		else
+		{
+			if(inflater == null)
+			{
+				inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			}
+			
+			textView = (TextView) inflater.inflate(R.layout.spinner_item, null);
+		}
+		
 		JSONObject location = getItem(position);
 		textView.setTag(location);
 		
