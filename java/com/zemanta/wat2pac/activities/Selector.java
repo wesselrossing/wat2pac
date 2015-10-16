@@ -1,6 +1,7 @@
 package com.zemanta.wat2pac.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -39,12 +40,14 @@ public class Selector extends Activity
                     JSONArray arr = airtableResponse.getJSONArray("records");
                     final List<Item> items = new ArrayList<Item>();
                     for (int i = 0; i < arr.length(); i++) {
+                        String id = arr.getJSONObject(i).getString("id");
                         JSONObject itemFields = arr.getJSONObject(i).getJSONObject("fields");
                         if (!itemFields.has("Attachments") || itemFields.getJSONArray("Attachments").length() == 0) {
                             continue;
                         }
                         JSONObject attachment = itemFields.getJSONArray("Attachments").getJSONObject(0);
                         Item item = new Item(
+                                id,
                                 itemFields.getString("Name"),
                                 attachment.getJSONObject("thumbnails").getJSONObject("large").getString("url")
                         );
@@ -56,10 +59,11 @@ public class Selector extends Activity
                     gridview.setAdapter(new ImageAdapter(Selector.this, items));
 
                     gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        public void onItemClick(AdapterView<?> parent, View v,
-                                                int position, long id) {
-                            Toast.makeText(Selector.this, items.get(position).getName(),
-                                    Toast.LENGTH_SHORT).show();
+                        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                            Intent data = new Intent();
+                            data.putExtra("itemID", items.get(position).getId());
+                            setResult(Activity.RESULT_OK, data);
+                            finish();
                         }
                     });
 
