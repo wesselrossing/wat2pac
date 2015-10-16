@@ -1,5 +1,7 @@
 package com.zemanta.wat2pac.activities;
 
+import com.zemanta.wat2pac.R;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
@@ -8,13 +10,16 @@ import android.widget.Button;
 
 public class Suitcase extends Activity
 {
+	private Button addItems;
+	
 	protected void onCreate(android.os.Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		
-		Button button = new Button(this);
-		button.setText("Add something!");
-		button.setOnClickListener(new OnClickListener()
+		setContentView(R.layout.suitcase_layout);
+		
+		addItems = (Button) findViewById(R.id.addItems);
+		addItems.setOnClickListener(new OnClickListener()
 		{
 			@Override
 			public void onClick(View view)
@@ -22,7 +27,5 @@ public class Suitcase extends Activity
 				startActivity(new Intent(Suitcase.this, Selector.class));
 			}
 		});
-		
-		setContentView(button);
 	}
 }

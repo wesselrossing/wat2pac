@@ -1,9 +1,5 @@
 package com.zemanta.wat2pac.adapter;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.zemanta.wat2pac.R;
 
 import android.content.Context;
