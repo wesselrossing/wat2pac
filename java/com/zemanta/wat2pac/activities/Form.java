@@ -11,7 +11,6 @@ import com.zemanta.wat2pac.airtable.OnAirtableResponseListener;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -26,9 +25,9 @@ public class Form extends Activity
 	private Button go;
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState)
+	protected void onResume()
 	{
-		super.onCreate(savedInstanceState);
+		super.onResume();
 		
 		setContentView(R.layout.form_layout);
 		
