@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -26,6 +27,17 @@ public class Form extends Activity
 	private Spinner when;
 	private Spinner list;
 	private Button go;
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
+		if(getSharedPreferences("wat2pac", 0).getString("packListId", null) != null)
+		{
+			startActivity(new Intent(this, Suitcase.class));
+		}
+		
+		super.onCreate(savedInstanceState);
+	}
 	
 	@Override
 	protected void onResume()

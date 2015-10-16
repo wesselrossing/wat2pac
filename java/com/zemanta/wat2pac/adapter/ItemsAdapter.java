@@ -4,13 +4,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.zemanta.wat2pac.R;
+
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.TableRow.LayoutParams;
 
 public class ItemsAdapter extends BaseAdapter
 {
+	private LayoutInflater inflater;
 	private JSONArray items;
 	
 	public ItemsAdapter(JSONArray items)
@@ -48,8 +55,24 @@ public class ItemsAdapter extends BaseAdapter
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
-		TextView textView = new TextView(parent.getContext());
+		TextView textView;
+		
+		if(convertView != null)
+		{
+			textView = (TextView) convertView;
+		}
+		else
+		{
+			if(inflater == null)
+			{
+				inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			}
+			
+			textView = (TextView) inflater.inflate(R.layout.spinner_item, null);
+		}
+		
 		textView.setText(getItem(position));
+		
 		return textView;
 	}
 }
