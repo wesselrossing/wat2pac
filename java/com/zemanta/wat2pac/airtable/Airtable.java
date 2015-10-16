@@ -87,6 +87,38 @@ public class Airtable
 		}
 	}
 	
+	public void patch(String target, JSONObject fields, OnAirtableResponseListener listener)
+	{
+		String body = null;
+		
+		try
+		{
+			JSONObject root = new JSONObject();
+			root.put("fields", fields);
+			body = root.toString();
+		}
+		catch(JSONException e)
+		{
+			listener.onError("Could not create JSON body");
+			
+			return;
+		}
+		
+		synchronized(pending)
+		{
+			pending.add(
+				new Communication(
+					"PATCH",
+					API + target,
+					body,
+					listener
+				)
+			);
+			
+			pending.notify();
+		}
+	}
+	
 	private class Communicator extends Thread
 	{
 		@Override

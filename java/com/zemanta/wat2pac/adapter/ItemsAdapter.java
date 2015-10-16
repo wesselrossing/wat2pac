@@ -5,6 +5,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.zemanta.wat2pac.R;
+import com.zemanta.wat2pac.activities.DownloadImageTask;
+import com.zemanta.wat2pac.airtable.Airtable;
+import com.zemanta.wat2pac.airtable.OnAirtableResponseListener;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,7 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.TableRow.LayoutParams;
 
 public class ItemsAdapter extends BaseAdapter
@@ -55,11 +60,11 @@ public class ItemsAdapter extends BaseAdapter
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
-		TextView textView;
+		ViewGroup viewGroup;
 		
 		if(convertView != null)
 		{
-			textView = (TextView) convertView;
+			viewGroup = (ViewGroup) convertView;
 		}
 		else
 		{
@@ -68,11 +73,32 @@ public class ItemsAdapter extends BaseAdapter
 				inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			}
 			
-			textView = (TextView) inflater.inflate(R.layout.spinner_item, null);
+			viewGroup = (ViewGroup) inflater.inflate(R.layout.suitcase_item, null);
 		}
 		
-		textView.setText(getItem(position));
+		final ViewGroup finalViewGroup = viewGroup;
 		
-		return textView;
+		Airtable.getInstance().get("Pack%20list/" + getItem(position), new OnAirtableResponseListener()
+		{
+			@Override
+			public void onError(String error) {
+
+				Toast.makeText(finalViewGroup.getContext(), error, Toast.LENGTH_LONG).show();
+			}
+			
+			@Override
+			public void onAirtableResponse(String response)
+			{
+				try
+				{
+				new DownloadImageTask((ImageView) finalViewGroup.findViewById(R.id.image))
+					.execute(new JSONObject(response).getJSONObject("fields").getJSONArray("Attachments").getJSONObject(0).getString("url"));
+				}catch(Exception e){}
+			}
+		});
+		
+//		textView.setText(getItem(position));
+		
+		return viewGroup;
 	}
 }
